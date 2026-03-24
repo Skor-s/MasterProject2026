@@ -75,7 +75,7 @@ cif_files <- list.files(path = dir_path,
 file.remove(cif_files)
 ```
 With the .cif-files removed, the remaining .pdb files are unpacked for further research.
-
+ 
 ## Unzipping .pdb files 
 In order to optimally access the content of the .pdb files, the files are first unzipped. The gunzip has a setting that normally allows the zipped file to be removed upon unpacking. This can take a relatively long time. Alternatively, the unzipped files can be moved to a different file e.g. here called `unzipped`, after which the zipped files can be removed manually. This allows the operations to be split, reducing chances for the system to crash while computing. 
 ```{r}
