@@ -5,15 +5,12 @@ book:
   title: |
     Code and data for "<paper title>"
   author: 
-    - name: Your name
-      orcid: Your ORCID
-  date: "year"
+    - name: Picha Kiana 
+  date: "2026"
   chapters:
     - index.qmd
     - chapters/chapter_01.qmd
-    - chapters/chapter_02.qmd
-    - chapters/appendices.qmd
-
+    
 bibliography: bibliography.bib
 
 execute:
