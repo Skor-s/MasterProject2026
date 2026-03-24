@@ -1,0 +1,24 @@
+project:
+  type: book
+
+book:
+  title: |
+    Code and data for "<paper title>"
+  author: 
+    - name: Picha Kiana 
+  date: "2026"
+  chapters:
+    - index.qmd
+    - chapters/chapter_01.qmd
+    
+bibliography: bibliography.bib
+
+execute:
+  freeze: auto
+
+format:
+  html:
+    theme: cosmo
+
+editor: 
+  mode: source
