@@ -42,6 +42,7 @@ This analysis uses the following libraries (including their respective versions)
 ```{r setup}
 #| echo: false
 # Load libraries
+library(rmarkdown)
 library(bio3d)
 library(R.utils)
 library(ggplot2)
