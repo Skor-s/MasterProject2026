@@ -26,7 +26,7 @@ jobs:
             c(
             "rmarkdown",
             "knitr",
-            "bio3d",µ
+            "bio3d",
             "R.utils",
             "ggplot2",
             "tidyverse",
