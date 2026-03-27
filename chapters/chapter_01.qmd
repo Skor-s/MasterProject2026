@@ -43,6 +43,7 @@ This analysis uses the following libraries (including their respective versions)
 #| echo: false
 # Load libraries
 library(rmarkdown)
+library(knitr)
 library(bio3d)
 library(R.utils)
 library(ggplot2)
@@ -268,13 +269,14 @@ figure1 <- ggbetweenstats(data_ordered, x = type, y = rmsd,
     # Set the CLD lower than the anchoring point in order to not block the outlier at DD
     vjust = 1.5
   )
+figure1
 ```
 
 ### Plotting of RMSD vs. sequence identity based on type of duplication
 To further visualize how the RMSD value varies throughout the duplicate pairs being compared, as well as the sequence identity, the RMSD is plotted against the sequence identity per type of duplication. 
 ```{r}
 # In order to maintain consistency of colors of the types of duplications throughout the report and this file, the colors are stored to apply in future figures. This is done by extracting the buildup of figure p and retrieving the colors assigned to the groups of the data
-cols <- unique(ggplot_build(p)$data[[1]]$colour)
+cols <- unique(ggplot_build(figure1)$data[[1]]$colour)
 
 # Specify RMSD grouped by duplication type, color based on duplication type
 figure2 <- ggplot(data_ordered, aes(x = seq_id, y = -log10(rmsd))) +

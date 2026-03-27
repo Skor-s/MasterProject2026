@@ -19,6 +19,27 @@ jobs:
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
+        
+      - name: Install R packages
+        run: |
+          install.packages(
+            c(
+            "rmarkdown",
+            "knitr",
+            "bio3d",µ
+            "R.utils",
+            "ggplot2",
+            "tidyverse",
+            "clusterProfiler",
+            "ggstatsplot",
+            "performance",
+            "rstatix",
+            "conover.test",
+            "rcompanion",
+            "report",
+            "sessioninfo"),
+            dependencies = TRUE)
+        shell: Rscript {0}
 
       - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2
