@@ -37,7 +37,7 @@ sessioninfo::session_info()
  
 # Masterproject : Structural Divergence 
 
-# Packages required
+## Packages required
 This analysis uses the following libraries (including their respective versions): bio3d ver. 2.4.5, R.utils ver. 2.13.0, ggplot2 ver. 4.0.2, tidyverse ver. 2.0.0, clusterProfiler ver. 4.14.6, ggstatsplot ver. 0.13.5. 
 ```{r setup}
 #| echo: false
@@ -59,9 +59,9 @@ library(sessioninfo)
 setwd("C:/OneDrive/OneDrive - UGent/Academiejaren/jaar5_semester2/Masterproject/Data")
 ```
 
-# File digestion
+## File digestion
 
-## Removing .cif files
+### Removing .cif files
 Upon researching and downloading the whole proteome of an organism from the Alphafold server, the Alphafold server will provide the proteome in .cif and .pdb files. In order to save space on the hard drive of the computer, the .cif-files are first removed.
 ```{r}
 # Set your directory path - Don't forget to replace organism to organism of interest!
@@ -77,7 +77,7 @@ file.remove(cif_files)
 ```
 With the .cif-files removed, the remaining .pdb files are unpacked for further research.
  
-## Unzipping .pdb files 
+### Unzipping .pdb files 
 In order to optimally access the content of the .pdb files, the files are first unzipped. The gunzip has a setting that normally allows the zipped file to be removed upon unpacking. This can take a relatively long time. Alternatively, the unzipped files can be moved to a different file e.g. here called `unzipped`, after which the zipped files can be removed manually. This allows the operations to be split, reducing chances for the system to crash while computing. 
 ```{r}
 # List all .gz files
@@ -101,10 +101,10 @@ for (file in gz_files) {
          remove = TRUE)
 }
 ```
-# Structural comparison 
+## Structural comparison 
 In this study, the structural comparison between a pair of proteins is based on a global RMSD-calculation, based on the C-alpha backbone of the proteins, through the use of the functions `pdbaln()` followed by `atom.select()` and `rmsd()`, all being from the `bio3d` package. The functions are enveloped in a larger function (`calculate_rmsd`) for high-throughput analysis of all protein-pairs. At the same time, this larger function will also retrieve the sequence similarity between the protein sequences within a pair, retrieved from the `pdbaln()` function, for visualizing the relation between the RMSD and sequence similarity later on. 
 
-## Loading of the dataframe 
+### Loading of the dataframe 
 A dataframe is set up containing the information coming from the Doubletrouble-database. Before loading the information of this database however, the EnsembL ID's are converted into Uniprot ID's. This conversion is necessary to link to the proteins to the .pdb structures gathered from the Alphafold database. Three columns are added to the dataframe for storing the results coming from `calculate_rmsd` function (see further): namely, the sequence identity, RMSD, and the B-factor after structural analysis is added per pair of pdb's. The B-factor computation is applied to deduce wether there is confounding of the B-factor with the RMSD. In Alphafold, the B-factor column of the .pdb's is applied to express Alphafold's confidence in predicting the structure. The higher this result, the more confidence Alphafold has in its prediction.
 ```{r}
 # Read file coming from Doubletrouble database, in which the entries are converted from Ensembl to Uniprot database conversion
@@ -120,7 +120,7 @@ data$rmsd <- NA_real_
 data$bavg <- NA_real_
 ```
 
-## Computing RMSD- and sequence-similarity aswell as B-factor values for each pair of duplicates
+### Computing RMSD- and sequence-similarity aswell as B-factor values for each pair of duplicates
 The RMSD is computed using the `rmsd()` function from the `bio3d` library. This function requires a sequence alignment of the protein sequences, which can be performed by `pdbaln()`, coming from the same library. To perform the sequence alignment, the library requires an older version of `MUSCLE` (ver.	`muscle3.8.31`), which can be downloaded at https://drive5.com/muscle/downloads_v3.html. For further installation instructions, consult the "*installing Bio3D*" section at the following link: http://thegrantlab.org/bio3d_v2/tutorials/installing-bio3d.  From the `pdbaln()` function also allows extraction of the sequence similarity and the B‑factor values. Although the B‑factor is an inherent property of a .pdb file, the B‑factors extracted through`pdbaln()` correspond only to the atoms that were used during the structural alignment. Considering we are comparing the global fold between two homologues protein structures, it has been opted to select for Calpha-atoms only. This reduces inflation of the RMSD-value coming from differences in side-chain positioning between two structures. Therefore, not all atoms from the original structures are included. Additionally, if the two protein sequences differ in length, certain residues will not participate in the alignment, further reducing the set of B‑factors returned.
 ```{r}
 # Specify function
@@ -161,7 +161,7 @@ return(c(rmsd_val, id, bavg))
 }
 ```
 
-## Iterating through data
+### Iterating through data
 The sequence similarity, retrieved from the `pdbaln()`function, and the RMSD-value, from the `rmsd()` function, are computed for each pair of duplicates and stored within the dataframe through a `for`-loop. The former two functions are enveloped in a larger function called `calculate_rmsd()`. If `calculate_rmsd()` fails to perform any of the former functions (e.g. due to the abscence of a UniProt structure within the Alphafold database), NA-values are set to replace any errors. This allows the function to continue and iterate over all the rows within the dataframe, without any errors interrupting the `for`-loop. 
 ```{r}
 # Iterate through each row
@@ -185,10 +185,10 @@ for (row in 1:nrow(data)) {
 }
 ```
 
-# Visualization
+## Visualization
 With the data digested and values computed, this section aims to bring together the data into a concise visualization. 
 
-## Data prepping
+### Data prepping
 Before visualization, some tweaks still have to be made to the data in order to avoid getting warnings and to maintain consistency throughout the figures. For the former, the entries that failed to produce an RMSD-value, therefore containing an `NA`-value within the `rmsd`-column, are removed. As for the latter, the types of duplications are ordered, ensuring that the order throughout the figures remains the same. 
 ```{r}
 data_ordered <- data |>
@@ -198,24 +198,24 @@ data_ordered <- data |>
   transform(type=factor(type,levels=c("SD","TD","PD", "rTRD", "dTRD", "DD")))
 ```
 
-## Plotting RMSD vs. type of duplication
+### Plotting RMSD vs. type of duplication
 To gain better insight on how the RMSD varies between the types of duplications, the RMSD is plotted as a violin plot per type of duplication. Besides that, the differences between groups is also statistically evaluated. 
 
-### Statistical analysis 
+#### Statistical analysis 
 It is important to use an appropriate test, that has the most power, to which the data meets the required assumptions. Multiple transformations were attempted with the data, but repeatedly normality was not met. That is why the significance of the data will be investigated using a Kruskal-Wallis test. This test requires the presence of three or more groups within the data and expects the dependent variable to be at least on the ordinal scale. Considering the distributions differ in shape and variance (see figure p), the Kruskal-Wallis test will test differences in distributions of the RMSD between different groups.
 ```{r}
 kruskal_test(rmsd ~ type, data = data)
 ```
 The p-value is less than the significance level 0.05, therefore there are significant differences between the types of duplications in terms of the distribution of RMSD. 
 
-### Post-hoc testing
+#### Post-hoc testing
 Considering the Kruskal-Wallis test is significant, the analysis continues with post-hoc testing. For this a Conover-Iman test will be applied. The Conover-Iman gains preference over the Dunn's test for its increased power (without requiring additional assumptions), therefore being able to avoid increased probability of having a type II error. Given that the sample size of each group is at least n = 660, the dataset is expected to do well with this test. 
 ```{r}
 conover <- conover.test(data$rmsd , data$type, method="holm")
 ```
 Using Holm-Bonferroni to adjust the p-values, the Conover-Iman test found almost every comparison between two groups significant, except for the comparison between dTRD - rTRD and PD - TD. 
 
-### Compact letter display
+#### Compact letter display
 In order to provide a visual summary of the significance groupings across all pairwise comparisons, a compact letter display (CLD) is applied to assign letters that represent which groups are statistically indistinguishable. 
 ```{r}
 # Generate a CLD using the cldList function from the rcompanion-library
@@ -228,7 +228,7 @@ cld <- cldList(comparison = conover$comparisons,
   mutate(Letter = toupper(Letter), pos_y = max(data_ordered$rmsd))
 ```
 
-### Plot
+#### Plot
 Finally, with the compact letter display computed and the data rendered, the plot can be created that expresses RMSD vs. the type of duplication. 
 ```{r}
 figure1 <- ggbetweenstats(data_ordered, x = type, y = rmsd,
@@ -270,7 +270,7 @@ figure1 <- ggbetweenstats(data_ordered, x = type, y = rmsd,
   )
 ```
 
-## Plotting of RMSD vs. sequence identity based on type of duplication
+### Plotting of RMSD vs. sequence identity based on type of duplication
 To further visualize how the RMSD value varies throughout the duplicate pairs being compared, as well as the sequence identity, the RMSD is plotted against the sequence identity per type of duplication. 
 ```{r}
 # In order to maintain consistency of colors of the types of duplications throughout the report and this file, the colors are stored to apply in future figures. This is done by extracting the buildup of figure p and retrieving the colors assigned to the groups of the data
@@ -314,10 +314,10 @@ figure2 <- ggplot(data_ordered, aes(x = seq_id, y = -log10(rmsd))) +
 figure2
 ```
 
-# Functional enrichment analysis 
+## Functional enrichment analysis 
 The functional enrichment analysis consists of the analysis of the top 10% most divergent proteins and the top 10% least divergent proteins (based on RMSD-calculation) and is aimed to evaluate enriched biological processes, Reactome pathways, and protein domain categories.
 
-## Data preparation
+### Data preparation
 The first step is to index the data based the sorted RMSD-value and remove entries where there's no RMSD-value `(rmsd = NA)`.
 ```{r}
 # Index the data based on rmsd-value
@@ -328,7 +328,7 @@ data_idx <- data_ordered |>
   mutate(idx = row_number())
 ```
 
-## Administer STRING-ID's
+### Administer STRING-ID's
 The STRING database is applied to denote the biological process, reactome pathways and protein domains. The database makes use of STRING-ID's to streamline the ID's coming from different databases. The name of the protein there has to be linked to the protein STRING-id within the database. This conversion is mediated through the protein aliases dataframe, acquired from the STRING database.
 ```{r}
 # Load STRING protein aliases
@@ -357,7 +357,7 @@ data_idx <- left_join(data_idx, df_aliases, by = c("dup2_uniprot" = "alias")) |>
 rm(df_aliases)
 ```
 
-## Compute background and top 10%
+### Compute background and top 10%
 As discussed earlier the the top 10% most divergent proteins and the top 10% least divergent proteins (based on RMSD-calculation) undergo functional enrichment to evaluate enriched biological processes, Reactome pathways, and protein domain categories. In this section, these entries are collected. Simultaneously, the background will be computed for the `enricher()` function of the `clusterProfiler` library. 
 ```{r}
 # Select the top 10% rows at the end, or at the beginning, of the dataframe for functional enrichment analysis 
@@ -369,7 +369,7 @@ upper <- tail(data_idx, n = round(nrow(data_idx) * 0.1))
 bg <- c(data_idx$string_id_dup1, data_idx$string_id_dup2) |> unique()
 ```
 
-## Intermezzo: visualization of RMSD-value vs. index
+### Intermezzo: visualization of RMSD-value vs. index
 In order to visualize the datapoints that will be considered during functional enrichment analysis, all indexed points are plotted against their respective RMSD-values. The top 10% lowest and highest scoring datapoints based on RMSD-value, will be marked on the plot to show the reader the data that is considered for the analysis. 
 ```{r}
 data_idx <- data_idx %>%
@@ -416,7 +416,7 @@ figure3 <- ggplot(data_idx, aes(x = idx, y = rmsd, color = color_group, size = c
 figure3
 ```
 
-## Retrieval of enrichment terms
+### Retrieval of enrichment terms
 As mentioned previously, the functional enrichment analysis will be performed using the STRING database. To do this, a dataframe containing all enrichment terms for Zea mays is loaded into the R environment. From this dataframe, the columns of interest (that being, biological processes, reactome pathways and protein domains) are selected. 
 ```{r}
 # Load in the STRING protein enrichment terms file of Zea mays into the R environment 
@@ -459,7 +459,7 @@ annot <- rbind(
 rm(df_enrichment_terms)
 ```
 
-## Enrichment analysis 
+### Enrichment analysis 
 With the top 10% lowest and highest scoring entries based on RMSD-value specified in separate dataframes and the enrichment terms specified ready for analysis, functional enrichment can be performed. 
 ```{r}
 # Pool all duplicates into one vector and select unique entries to avoid duplicates 
@@ -493,10 +493,10 @@ enrichment_upper <- enricher(
   filter(p.adjust <0.05)
 ```
 
-# B factor computation
+## B factor computation
 Based on visual analysis of two compared structures, there was a hypothesis that the confidence of Alphafold may confound the degree of divergence (based on RMSD) between structures. To test this hypothesis, the B-factor was previously extracted and stored in a dataframe, along with the sequence similarity and RMSD, when running the `get_values` function. 
 
-## Alternative average B-factor computation
+### Alternative average B-factor computation
 The B-factor computed during the `get_values` function is the average B-factor per pair of homologous, at the positions where both structures were aligned and therefore compared. In order to confirm that this is indeed the B-factor, the confidence score is also computed via an alternative way. Here, the confidence score is extracted, per structure, from the Alphafold server via API. Considering the computation of the average B-factor at positions where only both of the sequences is aligned is a rather intensive process, it would also be interesting to check whether this type of computation makes a difference relative to simply extracting the confidence score from the Alphafold server. 
 
 In this step, a function called `get_average_plddt` is set up. This function extracts the confidence score from the Alphafold website per protein ID. 
@@ -531,7 +531,7 @@ plddt_df <- lapply(proteins, function(x) {
   bind_rows()
 ```
 
-## Visual analysis
+### Visual analysis
 ```{r}
 # Specify RMSD grouped by duplication type, color based on duplication type
 plot1 <- ggplot(b_factor, aes(x = mean_value, y = rmsd)) +
@@ -600,7 +600,7 @@ plot2 <- ggplot(b_factor, aes(x = bavg, y = rmsd)) +
 figure4 <- grid.arrange(plot1, plot2, ncol=2)
 ```
 
-## Statistical analysis
+### Statistical analysis
 ```{r}
 fit <- lm(data = b_factor, rmsd ~ -bavg)
 summary(fit)
@@ -668,7 +668,7 @@ figure5 <- ggplot(b_factor, aes(x = idx, y = diff)) +
 figure5
 ```
 
-# Report sessioninfo
+## Report sessioninfo
 ```{r}
 session_info(
   pkgs = c("attached", "installed")[1],
