@@ -4,36 +4,6 @@ execute:
   eval: false
   warning: false
 ---
-
-# Chapter title
-
-
-```{r here}
-#| message: false
-#| eval: true
-
-library(here)
-
-set.seed(123) # for reproducibility
-```
-
-## Section 1
-
-
-## Section 2
-
-
-## Session info {.unnumbered}
-
-This document was created under the following conditions:
-
-```{r sessioninfo}
-#| eval: true
-#| echo: false
-sessioninfo::session_info()
-```
-
-## References {.unnumbered}
  
 # Masterproject : Structural Divergence 
 
@@ -61,6 +31,7 @@ setwd("C:/OneDrive/OneDrive - UGent/Academiejaren/jaar5_semester2/Masterproject/
 ```
 
 ## File digestion
+
 
 ### Removing .cif files
 Upon researching and downloading the whole proteome of an organism from the Alphafold server, the Alphafold server will provide the proteome in .cif and .pdb files. In order to save space on the hard drive of the computer, the .cif-files are first removed.
@@ -536,7 +507,7 @@ plddt_df <- lapply(proteins, function(x) {
 ### Visual analysis
 ```{r}
 # Specify RMSD grouped by duplication type, color based on duplication type
-plot1 <- ggplot(b_factor, aes(x = mean_value, y = rmsd)) +
+plot1 <- ggplot(data_ordered, aes(x = mean_value, y = rmsd)) +
   # Specify violin plot, change outline's color and size
   geom_point(size = 2, shape = 1, color = "#0D5AC6") +
   # Apply a trendline throughout the plot in order to visualize the general behavior of the datapoints
@@ -568,7 +539,7 @@ plot1 <- ggplot(b_factor, aes(x = mean_value, y = rmsd)) +
     strip.text = element_text(size = 10))
 
 # Specify RMSD grouped by duplication type, color based on duplication type
-plot2 <- ggplot(b_factor, aes(x = bavg, y = rmsd)) +
+plot2 <- ggplot(data_ordered, aes(x = bavg, y = rmsd)) +
   # Specify violin plot, change outline's color and size
   geom_point(size = 2, shape = 1, color = "#0D5AC6") +
   # Apply a trendline throughout the plot in order to visualize the general behavior of the datapoints
@@ -610,34 +581,8 @@ report(fit)
 ```
 
 ```{r}
-# 
-b_factor <- b_factor %>%
-  # Get the B-factor for dup1_uniprot entries from the previously gathered confidence scores from the Alphafold server
-  left_join(plddt_df, by = c("dup1_uniprot" = "id")) %>%
-  # Rename the column to avoid collision with the computing of the B-factor for the dup2_uniprot entries 
-  rename(dup1_score = score) %>%
-  # Get the B-factor for dup2_uniprot entries from the previously gathered confidence scores from the Alphafold server
-  left_join(plddt_df, by = c("dup2_uniprot" = "id")) %>%
-  # Rename the column
-  rename(dup2_score = score) %>%
-  # Compute the average B-factor score per pair of homologous proteins 
-  mutate(mean_value = (dup1_score + dup2_score) / 2)
-
-
-b_factor <- b_factor %>%
-  mutate(diff = (bavg - mean_value))
-
-
-b_factor <- merge(
-  b_factor,
-  data_idx[, c("dup1_uniprot", "dup2_uniprot", "idx")],   # only keep the needed column(s)
-  by = c("dup1_uniprot", "dup2_uniprot"),               # match using two columns
-  all.x = TRUE)
-```
-
-```{r}
 # Specify RMSD grouped by duplication type, color based on duplication type
-figure5 <- ggplot(b_factor, aes(x = idx, y = diff)) +
+figure5 <- ggplot(data_ordered, aes(x = idx, y = diff)) +
   # Specify violin plot, change outline's color and size
   geom_point(size = 2, shape = 1, color = "#0D5AC6") +
   # Apply a trendline throughout the plot in order to visualize the general behavior of the datapoints
