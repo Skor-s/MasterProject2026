@@ -183,7 +183,7 @@ The p-value is less than the significance level 0.05, therefore there are signif
 #### Post-hoc testing
 Considering the Kruskal-Wallis test is significant, the analysis continues with post-hoc testing. For this a Conover-Iman test will be applied. The Conover-Iman gains preference over the Dunn's test for its increased power (without requiring additional assumptions), therefore being able to avoid increased probability of having a type II error. Given that the sample size of each group is at least n = 660, the dataset is expected to do well with this test. 
 ```{r}
-conover <- conover.test(data$rmsd , data$type, method="holm")
+dunn <- dunn.test(data$rmsd , data$type, method="holm")
 ```
 Using Holm-Bonferroni to adjust the p-values, the Conover-Iman test found almost every comparison between two groups significant, except for the comparison between dTRD - rTRD and PD - TD. 
 
@@ -191,8 +191,8 @@ Using Holm-Bonferroni to adjust the p-values, the Conover-Iman test found almost
 In order to provide a visual summary of the significance groupings across all pairwise comparisons, a compact letter display (CLD) is applied to assign letters that represent which groups are statistically indistinguishable. 
 ```{r}
 # Generate a CLD using the cldList function from the rcompanion-library
-cld <- cldList(comparison = conover$comparisons,
-               p.value    = conover$P.adjusted,
+cld <- cldList(comparison = dunn$comparisons,
+               p.value    = dunn$P.adjusted,
                threshold  = 0.05) |>
   # Select relevant columns for the visual representation
   select(Group, Letter) |>

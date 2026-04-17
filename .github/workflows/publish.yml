@@ -34,7 +34,7 @@ jobs:
             "ggstatsplot",
             "performance",
             "rstatix",
-            "conover.test",
+            "dunn.test",
             "rcompanion",
             "report",
             "sessioninfo"),
