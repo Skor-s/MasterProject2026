@@ -1,14 +1,26 @@
 
 # Preface {.unnumbered}
 
-This book contains all code and data used in the paper
-*<paper title>*, and it is intended to make all analyses fully reproducible.
+This book contains all code and data used in the paper **Impact of duplication modes on protein structural divergence in *Zea Mays* **, and it is intended to make all analyses fully reproducible.
 
 ---
 
 **ABSTRACT**
 
-In order to replace this abstract, consult abstract.sqm
+Gene duplications provide a greater, less-constrained chance of natural selection to shape novel function and are therefore recognized as a source of novel genetic material that can drive evolution. In plants, the abundance of duplicated genes within their genomes exceeds that observed in other eukaryotic kingdoms. Understanding how these duplications contribute to gene function and evolution is of utmost agricultural importance.
 
+The different duplication modes have already been studied at genomics-, transcriptomics-, temporal- and spatial-omics level. Although previous studies have characterized selectional pressures associated with these duplication modes at the sequence level, their structural consequences remain largely unexplored.
 
-**Keywords:** word1, word2, word3, word4.
+This master’s project is an explorative study that aims to map the first insights in comparing different duplication modes in terms of global structural divergence in *Zea mays*. We aim to answer the following questions:
+
+- What is the impact of the duplication mode on protein structural divergence in Zea mays? 
+
+-	What is the difference in structural divergence between duplication modes in Zea mays?
+
+-	What is the impact of decreasing protein sequence identity on the protein structural divergence per duplication mode in Zea mays?
+
+-	What are the enriched biological processes, reactome pathways and protein domains in the most and least structurally diverged protein pairs?
+
+    -	What is the biological reason behind these structurally converged / conserved processes (based on literature)?
+
+-	Is there confounding between the average protein structural divergence and the average AF prediction confidence?  

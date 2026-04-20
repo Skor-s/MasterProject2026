@@ -1,15 +1,13 @@
 ---
 execute: 
-  echo: true
   eval: false
   warning: false
+  message: false
+  echo: true
 ---
  
 # Masterproject : Structural Divergence 
-
-## Packages required
-This analysis uses the following libraries (including their respective versions): bio3d ver. 2.4.5, R.utils ver. 2.13.0, ggplot2 ver. 4.0.2, tidyverse ver. 2.0.0, clusterProfiler ver. 4.14.6, ggstatsplot ver. 0.13.5. 
-```{r setup}
+```{r}
 #| echo: false
 # Load libraries
 library(rmarkdown)
@@ -31,7 +29,6 @@ setwd("C:/OneDrive/OneDrive - UGent/Academiejaren/jaar5_semester2/Masterproject/
 ```
 
 ## File digestion
-
 
 ### Removing .cif files
 Upon researching and downloading the whole proteome of an organism from the Alphafold server, the Alphafold server will provide the proteome in .cif and .pdb files. In order to save space on the hard drive of the computer, the .cif-files are first removed.
@@ -254,7 +251,7 @@ figure2 <- ggplot(data_ordered, aes(x = seq_id, y = -log10(rmsd))) +
   # Specify violin plot, change outline's color and size
   geom_point(size = 2, shape = 1, aes(color = type)) +
   # Specify the colors manually in order to maintain consistency throughout the figures 
-  scale_colour_manual(values = cols) +
+  figure1$scales$scales[[1]] +
   # Apply a trendline throughout the plot in order to visualize the general behavior of the datapoints
   geom_smooth(se = TRUE, aes(group=type), alpha = 0.75, color = "black") +
   # Create a separate plot per type in order to improve visualization
