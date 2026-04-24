@@ -8,7 +8,6 @@ execute:
  
 # Masterproject : Structural Divergence 
 ```{r}
-#| echo: false
 # Load libraries
 library(rmarkdown)
 library(knitr)
@@ -29,9 +28,10 @@ setwd("C:/OneDrive/OneDrive - UGent/Academiejaren/jaar5_semester2/Masterproject/
 ```
 
 ## File digestion
+In this section, Alphafold2's *Zea mays* (*Z. mays*) proteome is downloaded as well as information on the duplicate pairs and duplicate pair genes from the doubletrouble database. Before this, the Ensembl entries from the doubletrouble database were already converted into Uniprot format. 
 
 ### Removing .cif files
-Upon researching and downloading the whole proteome of an organism from the Alphafold server, the Alphafold server will provide the proteome in .cif and .pdb files. In order to save space on the hard drive of the computer, the .cif-files are first removed.
+The Alphafold2 server will provide the proteome in .cif and .pdb files. In order to save space on the hard drive of the computer, the .cif-files are first removed.
 ```{r}
 # Set your directory path - Don't forget to replace organism to organism of interest!
 dir_path <- "./Alphafold/Z.maize"
@@ -74,7 +74,7 @@ for (file in gz_files) {
 In this study, the structural comparison between a pair of proteins is based on a global RMSD-calculation, based on the C-alpha backbone of the proteins, through the use of the functions `pdbaln()` followed by `atom.select()` and `rmsd()`, all being from the `bio3d` package. The functions are enveloped in a larger function (`calculate_rmsd`) for high-throughput analysis of all protein-pairs. At the same time, this larger function will also retrieve the sequence similarity between the protein sequences within a pair, retrieved from the `pdbaln()` function, for visualizing the relation between the RMSD and sequence similarity later on. 
 
 ### Loading of the dataframe 
-A dataframe is set up containing the information coming from the Doubletrouble-database. Before loading the information of this database however, the EnsembL ID's are converted into Uniprot ID's. This conversion is necessary to link to the proteins to the .pdb structures gathered from the Alphafold database. Three columns are added to the dataframe for storing the results coming from `calculate_rmsd` function (see further): namely, the sequence identity, RMSD, and the B-factor after structural analysis is added per pair of pdb's. The B-factor computation is applied to deduce wether there is confounding of the B-factor with the RMSD. In Alphafold, the B-factor column of the .pdb's is applied to express Alphafold's confidence in predicting the structure. The higher this result, the more confidence Alphafold has in its prediction.
+A dataframe is set up containing the information coming from the doubletrouble-database. Before loading the information of this database however, the EnsembL ID's are converted into Uniprot ID's. This conversion is necessary to link to the proteins to the .pdb structures gathered from the Alphafold database. Three columns are added to the dataframe for storing the results coming from `calculate_rmsd` function (see further): namely, the sequence identity, RMSD, and the B-factor after structural analysis is added per pair of pdb's. The B-factor computation is applied to deduce wether there is confounding of the B-factor with the RMSD. In Alphafold, the B-factor column of the .pdb's is applied to express Alphafold's confidence in predicting the structure. The higher this result, the more confidence Alphafold has in its prediction.
 ```{r}
 # Read file coming from Doubletrouble database, in which the entries are converted from Ensembl to Uniprot database conversion
 data <- read.delim("./Doubletrouble/zma_pairs_uniprot.tsv", stringsAsFactors = FALSE) |>
@@ -89,7 +89,7 @@ data$rmsd <- NA_real_
 data$bavg <- NA_real_
 ```
 
-### Computing RMSD- and sequence-similarity aswell as B-factor values for each pair of duplicates
+### Computing structure divergence and sequence-identity and Alphafold's confidence for each pair of duplicates
 The RMSD is computed using the `rmsd()` function from the `bio3d` library. This function requires a sequence alignment of the protein sequences, which can be performed by `pdbaln()`, coming from the same library. To perform the sequence alignment, the library requires an older version of `MUSCLE` (ver.	`muscle3.8.31`), which can be downloaded at https://drive5.com/muscle/downloads_v3.html. For further installation instructions, consult the "*installing Bio3D*" section at the following link: http://thegrantlab.org/bio3d_v2/tutorials/installing-bio3d.  From the `pdbaln()` function also allows extraction of the sequence similarity and the B‑factor values. Although the B‑factor is an inherent property of a .pdb file, the B‑factors extracted through`pdbaln()` correspond only to the atoms that were used during the structural alignment. Considering we are comparing the global fold between two homologues protein structures, it has been opted to select for Calpha-atoms only. This reduces inflation of the RMSD-value coming from differences in side-chain positioning between two structures. Therefore, not all atoms from the original structures are included. Additionally, if the two protein sequences differ in length, certain residues will not participate in the alignment, further reducing the set of B‑factors returned.
 ```{r}
 # Specify function
@@ -613,6 +613,7 @@ figure5
 ```
 
 ## Report sessioninfo
+This document was created under the following conditions:
 ```{r}
 session_info(
   pkgs = c("attached", "installed")[1],
